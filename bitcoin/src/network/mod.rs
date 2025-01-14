@@ -15,7 +15,7 @@
 //! let network = Network::Bitcoin;
 //! let bytes = serialize(&network.magic());
 //!
-//! assert_eq!(&bytes[..], &[0xF9, 0xBE, 0xB4, 0xD9]);
+//! assert_eq!(&bytes[..], &[0xF9, 0xBA, 0xB9, 0xD2]);
 //! ```
 
 pub mod params;
@@ -48,7 +48,9 @@ pub enum NetworkKind {
 // ambiguous due to confusion caused by signet/testnet/regtest.
 impl NetworkKind {
     /// Returns true if this is real mainnet bitcoin.
-    pub fn is_mainnet(&self) -> bool { *self == NetworkKind::Main }
+    pub fn is_mainnet(&self) -> bool {
+        *self == NetworkKind::Main
+    }
 }
 
 impl From<Network> for NetworkKind {
@@ -132,10 +134,12 @@ impl Network {
     /// use bitcoin::p2p::Magic;
     /// use bitcoin::Network;
     ///
-    /// assert_eq!(Ok(Network::Bitcoin), Network::try_from(Magic::from_bytes([0xF9, 0xBE, 0xB4, 0xD9])));
+    /// assert_eq!(Ok(Network::Bitcoin), Network::try_from(Magic::from_bytes([0xF9, 0xBA, 0xB9, 0xD2])));
     /// assert_eq!(None, Network::from_magic(Magic::from_bytes([0xFF, 0xFF, 0xFF, 0xFF])));
     /// ```
-    pub fn from_magic(magic: Magic) -> Option<Network> { Network::try_from(magic).ok() }
+    pub fn from_magic(magic: Magic) -> Option<Network> {
+        Network::try_from(magic).ok()
+    }
 
     /// Return the network magic bytes, which should be encoded little-endian
     /// at the start of every message
@@ -147,9 +151,11 @@ impl Network {
     /// use bitcoin::Network;
     ///
     /// let network = Network::Bitcoin;
-    /// assert_eq!(network.magic(), Magic::from_bytes([0xF9, 0xBE, 0xB4, 0xD9]));
+    /// assert_eq!(network.magic(), Magic::from_bytes([0xF9, 0xBA, 0xB9, 0xD2]));
     /// ```
-    pub fn magic(self) -> Magic { Magic::from(self) }
+    pub fn magic(self) -> Magic {
+        Magic::from(self)
+    }
 
     /// Converts a `Network` to its equivalent `bitcoind -chain` argument name.
     ///
@@ -205,7 +211,9 @@ impl Network {
     /// let network = Network::Bitcoin;
     /// assert_eq!(network.chain_hash(), ChainHash::BITCOIN);
     /// ```
-    pub fn chain_hash(self) -> ChainHash { ChainHash::using_genesis_block_const(self) }
+    pub fn chain_hash(self) -> ChainHash {
+        ChainHash::using_genesis_block_const(self)
+    }
 
     /// Constructs a new `Network` from the chain hash (genesis block hash).
     ///
@@ -302,7 +310,9 @@ impl fmt::Display for ParseNetworkError {
 
 #[cfg(feature = "std")]
 impl std::error::Error for ParseNetworkError {
-    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> { None }
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        None
+    }
 }
 
 impl FromStr for Network {
@@ -341,7 +351,9 @@ impl fmt::Display for UnknownChainHashError {
 
 #[cfg(feature = "std")]
 impl std::error::Error for UnknownChainHashError {
-    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> { None }
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        None
+    }
 }
 
 impl TryFrom<ChainHash> for Network {
@@ -368,7 +380,7 @@ mod tests {
 
     #[test]
     fn serialize_deserialize() {
-        assert_eq!(serialize(&Network::Bitcoin.magic()), &[0xf9, 0xbe, 0xb4, 0xd9]);
+        assert_eq!(serialize(&Network::Bitcoin.magic()), &[0xF9, 0xBA, 0xB9, 0xD2]);
         assert_eq!(
             serialize(&Network::Testnet(TestnetVersion::V3).magic()),
             &[0x0b, 0x11, 0x09, 0x07]
@@ -380,7 +392,7 @@ mod tests {
         assert_eq!(serialize(&Network::Signet.magic()), &[0x0a, 0x03, 0xcf, 0x40]);
         assert_eq!(serialize(&Network::Regtest.magic()), &[0xfa, 0xbf, 0xb5, 0xda]);
 
-        assert_eq!(deserialize(&[0xf9, 0xbe, 0xb4, 0xd9]).ok(), Some(Network::Bitcoin.magic()));
+        assert_eq!(deserialize(&[0xF9, 0xBA, 0xB9, 0xD2]).ok(), Some(Network::Bitcoin.magic()));
         assert_eq!(
             deserialize(&[0x0b, 0x11, 0x09, 0x07]).ok(),
             Some(Network::Testnet(TestnetVersion::V3).magic())
